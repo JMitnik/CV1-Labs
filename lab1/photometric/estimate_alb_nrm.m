@@ -8,14 +8,14 @@ function [ albedo, normal ] = estimate_alb_nrm( image_stack, scriptV, shadow_tri
 %   albedo : the surface albedo
 %   normal : the surface normal
 
-% warning('off', 'MATLAB:rankDeficientMatrix');
 
-[h, w, n] = size(image_stack);
+[h, w, d] = size(image_stack);
 if nargin == 2
+    disp('shadow trick on');
     shadow_trick = true;
 end
 
-% create arrays for
+% create arrays for 
 %   albedo (1 channel)
 %   normal (3 channels)
 albedo = zeros(h, w, 1);
@@ -24,30 +24,30 @@ normal = zeros(h, w, 3);
 % =========================================================================
 % YOUR CODE GOES HERE
 % for each point in the image array
-%   stack image values into a vector i
-%   construct the diagonal matrix scriptI
-%   solve scriptI * scriptV * g = scriptI * i to obtain g for this point
-%   albedo at this point is |g|
-%   normal at this point is g / |g|
-flattened_img_stack = reshape(image_stack, h * w, n);
-albedo_reshaped = zeros(h * w, 1);
-normal_reshaped = zeros(h * w, 3);
-
-for idx = 1: length(flattened_img_stack(:,1))
-    i = flattened_img_stack(idx, :)';
-    scriptI = diag(i);
-    mag_i = norm(i);
-    
-    if mag_i > 0
-        g = linsolve(scriptI * scriptV, scriptI * i);
-        norm_g = norm(g);
-        albedo_reshaped(idx, 1) = norm_g;
-        normal_reshaped(idx, :) = g / norm_g;
+for r = 1:h
+    for c = 1:w
+        %   stack image values into a vector i
+        i = reshape(image_stack(r,c,:),[d,1]);
+        if shadow_trick == true
+            %   construct the diagonal matrix scriptI
+            scriptI = diag(i);
+            %   solve scriptI * scriptV * g = scriptI * i to obtain g for this point
+            [g, ~] = linsolve(scriptI * scriptV, scriptI * i);
+        else
+            [g, ~] = linsolve(scriptV, i);
+        end
+        %   albedo at this point is |g|
+        albedo(r,c) = norm(g);
+        
+        %   normal at this point is g / |g|
+        g_unit = g / norm(g);
+        normal(r,c,1) = g_unit(1,:);
+        normal(r,c,2) = g_unit(2,:);
+        normal(r,c,3) = g_unit(3,:);
     end
 end
 
-albedo = reshape(albedo_reshaped, h, w, 1);
-normal = reshape(normal_reshaped, h, w, 3);
+
 
 % =========================================================================
 

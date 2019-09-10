@@ -9,21 +9,21 @@ function [ p, q, SE ] = check_integrability( normals )
 p = zeros(size(normals));
 q = zeros(size(normals));
 SE = zeros(size(normals));
-
+[h,w,d] = size(normals);
 % ========================================================================
 % YOUR CODE GOES HERE
-% Compute p and q, where
-% p measures value of df / dx
-% q measures value of df / dy
-[h, w, n] = size(normals);
-p_resized = reshape(p, h * w, n);
-q_resized = reshape(q, h * w, n);
+% Loop over each normal to calculate p's and q's
+for r = 1:h
+    for c = 1:w
+    % Compute p and q, where
+    % p measures value of df / dx = a(x,y)/c(x,y)
+    p_ = normals(r,c,1) / normals(r,c,3);
+    % q measures value of df / dy = 
+    q_ = normals(r,c,2) / normals(r,c,3);
 
-normals_flattened = reshape(normals, h * w, n);
-p_resized = normals_flattened(:, 1) ./ normals_flattened(:, 3);
-q_resized = normals_flattened(:, 2) ./ normals_flattened(:, 3);
-p = reshape(p_resized, h, w, 1);
-q = reshape(q_resized, h, w, 1);
+    end
+end
+
 % ========================================================================
 
 
@@ -38,9 +38,7 @@ q(isnan(q)) = 0;
 % approximate second derivate by neighbor difference
 % and compute the Squared Errors SE of the 2 second derivatives SE
 
-p_def = diff(p);
-q_def = diff(q);
-SE = (p_def - q_def).^2;
+
 % ========================================================================
 
 
