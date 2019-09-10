@@ -8,14 +8,14 @@ function [ albedo, normal ] = estimate_alb_nrm( image_stack, scriptV, shadow_tri
 %   albedo : the surface albedo
 %   normal : the surface normal
 
-warning('off', 'MATLAB:rankDeficientMatrix');
+% warning('off', 'MATLAB:rankDeficientMatrix');
 
 [h, w, n] = size(image_stack);
 if nargin == 2
     shadow_trick = true;
 end
 
-% create arrays for 
+% create arrays for
 %   albedo (1 channel)
 %   normal (3 channels)
 albedo = zeros(h, w, 1);
@@ -36,9 +36,14 @@ normal_reshaped = zeros(h * w, 3);
 for idx = 1: length(flattened_img_stack(:,1))
     i = flattened_img_stack(idx, :)';
     scriptI = diag(i);
-    g = mldivide((scriptI * i), (scriptI * scriptV));
-    albedo_reshaped(idx, 1) = norm(g);
-    normal_reshaped(idx, :) = g / norm(g);
+    mag_i = norm(i);
+    
+    if mag_i > 0
+        g = linsolve(scriptI * scriptV, scriptI * i);
+        norm_g = norm(g);
+        albedo_reshaped(idx, 1) = norm_g;
+        normal_reshaped(idx, :) = g / norm_g;
+    end
 end
 
 albedo = reshape(albedo_reshaped, h, w, 1);

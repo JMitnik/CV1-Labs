@@ -26,7 +26,17 @@ switch path_type
         %   for each element of the row except for leftmost
         %       height_value = previous_height_value + corresponding_p_value
         
-
+        % Left col
+        for height_idx=2:h
+           prev_h_val = height_map(1, height_idx - 1)
+           height_map(1, height_idx) = prev_h_val + q(1, height_idx);
+           
+           for row_idx=2:w
+              prev_h_val = height_map( 
+           end
+        
+        end
+        
        
         % =================================================================
                

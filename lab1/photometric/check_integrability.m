@@ -15,8 +15,15 @@ SE = zeros(size(normals));
 % Compute p and q, where
 % p measures value of df / dx
 % q measures value of df / dy
+[h, w, n] = size(normals);
+p_resized = reshape(p, h * w, n);
+q_resized = reshape(q, h * w, n);
 
-
+normals_flattened = reshape(normals, h * w, n);
+p_resized = normals_flattened(:, 1) ./ normals_flattened(:, 3);
+q_resized = normals_flattened(:, 2) ./ normals_flattened(:, 3);
+p = reshape(p_resized, h, w, 1);
+q = reshape(q_resized, h, w, 1);
 % ========================================================================
 
 
@@ -31,7 +38,9 @@ q(isnan(q)) = 0;
 % approximate second derivate by neighbor difference
 % and compute the Squared Errors SE of the 2 second derivatives SE
 
-
+p_def = diff(p);
+q_def = diff(q);
+SE = (p_def - q_def).^2;
 % ========================================================================
 
 
