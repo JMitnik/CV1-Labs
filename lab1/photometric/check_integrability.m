@@ -38,8 +38,9 @@ q(isnan(q)) = 0;
 % approximate second derivate by neighbor difference
 % and compute the Squared Errors SE of the 2 second derivatives SE
 
+% TODO: Add padding row and padding col to include
 p_def = diff(p);
-q_def = diff(q);
+q_def = diff(q, 1, 2);
 SE = (p_def - q_def).^2;
 % ========================================================================
 
