@@ -39,7 +39,14 @@ for idx = 1: length(flattened_img_stack(:,1))
     mag_i = norm(i);
     
     if mag_i > 0
-        g = linsolve(scriptI * scriptV, scriptI * i);
+        if shadow_trick == true
+            
+            g = linsolve(scriptI * scriptV, scriptI * i);
+        else
+            
+            g = linsolve(scriptV, i);
+        end
+        
         norm_g = norm(g);
         albedo_reshaped(idx, 1) = norm_g;
         normal_reshaped(idx, :) = g / norm_g;
