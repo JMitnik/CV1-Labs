@@ -15,7 +15,7 @@ fprintf('Finish loading %d images.\n\n', n);
 
 % compute the surface gradient from the stack of imgs and light source mat
 disp('Computing surface albedo and normal map...')
-[albedo, normals] = estimate_alb_nrm(image_stack, scriptV, false);
+[albedo, normals] = estimate_alb_nrm(image_stack, scriptV, true);
 
 
 %% integrability check: is (dp / dy  -  dq / dx) ^ 2 small everywhere?
