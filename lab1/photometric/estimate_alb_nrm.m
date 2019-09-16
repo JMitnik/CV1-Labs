@@ -18,44 +18,45 @@ else
 end
 
 % create arrays for
-%   albedo (1 channel)
-%   normal (3 channels)
+% albedo (1 channel)
 albedo = zeros(h, w, 1);
+% normal (3 channels)
 normal = zeros(h, w, 3);
 
 % =========================================================================
-% YOUR CODE GOES HERE
-% for each point in the image array
-%   stack image values into a vector i
-%   construct the diagonal matrix scriptI
-%   solve scriptI * scriptV * g = scriptI * i to obtain g for this point
-%   albedo at this point is |g|
-%   normal at this point is g / |g|
+% Flatten the stack to make looping easier
 flattened_img_stack = reshape(image_stack, h * w, n);
 albedo_reshaped = zeros(h * w, 1);
 normal_reshaped = zeros(h * w, 3);
 
+% for each point in the image array
 for idx = 1: length(flattened_img_stack(:,1))
+    %   stack image values into a vector i
     i = flattened_img_stack(idx, :)';
+    %   construct the diagonal matrix scriptI
     scriptI = diag(i);
     mag_i = norm(i);
     
     if mag_i > 0
         if shadow_trick == true
+            % solve scriptI * scriptV * g = scriptI * i to obtain g for this point
             g = linsolve(scriptI * scriptV, scriptI * i);
         else
+            % solve scriptV * g = i to obtain g for this point
             g = linsolve(scriptV, i);
         end
-        
+
         norm_g = norm(g);
+        % albedo at this point is |g|
         albedo_reshaped(idx, 1) = norm_g;
+        % normal at this point is g / |g|
         normal_reshaped(idx, :) = g / norm_g;
     end
 end
 
+% Reshape back to original shape
 albedo = reshape(albedo_reshaped, h, w, 1);
 normal = reshape(normal_reshaped, h, w, 3);
-
 % =========================================================================
 
 end
