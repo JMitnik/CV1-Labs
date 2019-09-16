@@ -8,7 +8,7 @@ function [ albedo, normal ] = estimate_alb_nrm( image_stack, scriptV, shadow_tri
 %   albedo : the surface albedo
 %   normal : the surface normal
 
-% warning('off', 'MATLAB:rankDeficientMatrix');
+warning('off', 'MATLAB:rankDeficientMatrix');
 
 [h, w, n] = size(image_stack);
 if nargin == 2
