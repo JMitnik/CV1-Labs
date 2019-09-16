@@ -34,7 +34,7 @@ show_model(albedo, height_map);
 
 
 %% Face
-[image_stack, scriptV] = load_face_images('photometrics_images/yaleB02/');
+[image_stack, scriptV] = load_face_images('photometrics_images/yaleB02-test/');
 [h, w, n] = size(image_stack);
 fprintf('Finish loading %d images.\n\n', n);
 disp('Computing surface albedo and normal map...')
