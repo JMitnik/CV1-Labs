@@ -1,4 +1,4 @@
-function [ image_stack, scriptV ] = load_syn_images( image_dir, channel )
+function [ image_stack, scriptV ] = load_syn_images( image_dir, channel)
 %LOAD_SYN_IMAGES read from directory image_dir all files with extension png
 %   image_dir: path to the image directory
 %   nchannel: the image channel to be loaded, default = 1
@@ -10,6 +10,12 @@ files = dir(fullfile(image_dir, '*.png'));
 nfiles = length(files);
 
 if nargin == 1
+    nfiles = length(files);
+else
+    nfiles = nr_images;
+end
+
+if nargin < 3
     channel = 1;
 end
 

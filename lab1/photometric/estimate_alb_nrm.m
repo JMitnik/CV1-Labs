@@ -8,11 +8,13 @@ function [ albedo, normal ] = estimate_alb_nrm( image_stack, scriptV, shadow_tri
 %   albedo : the surface albedo
 %   normal : the surface normal
 
-% warning('off', 'MATLAB:rankDeficientMatrix');
+warning('off', 'MATLAB:rankDeficientMatrix');
 
 [h, w, n] = size(image_stack);
 if nargin == 2
     shadow_trick = true;
+else
+    shadow_trick = false;
 end
 
 % create arrays for
@@ -40,10 +42,8 @@ for idx = 1: length(flattened_img_stack(:,1))
     
     if mag_i > 0
         if shadow_trick == true
-            
             g = linsolve(scriptI * scriptV, scriptI * i);
         else
-            
             g = linsolve(scriptV, i);
         end
         

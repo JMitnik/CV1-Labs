@@ -34,8 +34,8 @@ q(isnan(q)) = 0;
 % and compute the Squared Errors SE of the 2 second derivatives SE
 
 % TODO: Add padding row and padding col to include
-q_def = [diff(q')', zeros(h, 1)];
-p_def = [diff(p); zeros(1, w)];
+q_def = [zeros(h, 1), diff(q')'];
+p_def = [zeros(1, w); diff(p)];
 SE = (p_def - q_def).^2;
 % ========================================================================
 

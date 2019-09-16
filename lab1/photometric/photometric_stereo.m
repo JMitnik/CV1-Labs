@@ -1,12 +1,12 @@
 close all
 clear all
 clc
- 
+
 disp('Part 1: Photometric Stereo')
 
 % obtain many images in a fixed view under different illumination
 disp('Loading images...')
-image_dir = 'photometric_images/SphereGray5/';   % TODO: get the path of the script
+image_dir = 'photometrics_images/SphereGray5/';
 %image_ext = '*.png';
 
 [image_stack, scriptV] = load_syn_images(image_dir);
@@ -16,7 +16,6 @@ fprintf('Finish loading %d images.\n\n', n);
 % compute the surface gradient from the stack of imgs and light source mat
 disp('Computing surface albedo and normal map...')
 [albedo, normals] = estimate_alb_nrm(image_stack, scriptV);
-
 
 %% integrability check: is (dp / dy  -  dq / dx) ^ 2 small everywhere?
 disp('Integrability checking')
@@ -35,7 +34,7 @@ show_model(albedo, height_map);
 
 
 %% Face
-[image_stack, scriptV] = load_face_images('./yaleB02/');
+[image_stack, scriptV] = load_face_images('photometrics_images/yaleB02/');
 [h, w, n] = size(image_stack);
 fprintf('Finish loading %d images.\n\n', n);
 disp('Computing surface albedo and normal map...')
