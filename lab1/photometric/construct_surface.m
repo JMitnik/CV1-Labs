@@ -52,7 +52,7 @@ switch path_type
         end
         
         for row_idx=1:w
-           for height_idx=2:w
+           for height_idx=2:h
               prev_h_val = height_map(height_idx - 1, row_idx);
               height_map(height_idx, row_idx) = prev_h_val + q(height_idx, row_idx);
            end
@@ -89,7 +89,7 @@ switch path_type
         end
         
         for row_idx=1:w
-           for height_idx=2:w
+           for height_idx=2:h
               prev_h_val = height_map_row(height_idx - 1, row_idx);
               height_map_row(height_idx, row_idx) = prev_h_val + q(height_idx, row_idx);
            end

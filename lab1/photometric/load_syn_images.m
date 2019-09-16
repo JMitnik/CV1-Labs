@@ -45,7 +45,7 @@ end
 % normalization
 min_val = double(min(image_stack(:)));
 max_val = double(max(image_stack(:)));
-image_stack = (double(image_stack) - min_val) / (max_val - min_val);
+image_stack = ((double(image_stack) - min_val) / (max_val - min_val + 1));
 
 normV = sqrt(sum(V.^2, 2));
 scriptV = bsxfun(@rdivide, V, normV);
