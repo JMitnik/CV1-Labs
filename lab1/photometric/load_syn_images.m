@@ -10,12 +10,6 @@ files = dir(fullfile(image_dir, '*.png'));
 nfiles = length(files);
 
 if nargin == 1
-    nfiles = length(files);
-else
-    nfiles = nr_images;
-end
-
-if nargin < 3
     channel = 1;
 end
 

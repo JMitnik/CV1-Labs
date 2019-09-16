@@ -1,8 +1,10 @@
-function [albedo, normals, p, q, SE, height_map] = get_statistics_from_filepath(path_to_folder, shadow_trick, map_construction_path)
+function [albedo, normals, p, q, SE, height_map] = get_statistics_from_filepath(path_to_folder, shadow_trick, map_construction_path, channel)
 %GET_STATISTICS_FROM_FILEPATH Summary of this function goes here
 %   Detailed explanation goes here
 
-[image_stack, scriptV] = load_syn_images(path_to_folder);
+[image_stack, scriptV] = load_syn_images(path_to_folder, channel);
+[image_stack, scriptV] = load_syn_images(path_to_folder, channel);
+[image_stack, scriptV] = load_syn_images(path_to_folder, channel);
 
 if shadow_trick == true
     [albedo, normals] = estimate_alb_nrm(image_stack, scriptV);
