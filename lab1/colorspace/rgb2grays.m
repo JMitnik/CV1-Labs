@@ -10,6 +10,5 @@ lum = 0.21 * r + 0.72 * g + 0.07 * b;
 % built-in MATLAB function 
 gray = rgb2gray(input_image);
 
-output_image = cat(3,lgt,avg,lum);
+output_image = cat(4,gray,lgt,avg,lum);
 end
-
