@@ -1,5 +1,4 @@
 .DS_STORE
-*.png
 *.zip
 *.m~
 *.pdf
@@ -7,8 +6,8 @@
 *.pgm
 *.LOG
 *.info
-*.png
-*.jpg
 *.asv
+lab1/**/*.png
+lab1/**/*.jpg
 lab1/cv1_labs_1.pdf
 **/*.pdf
