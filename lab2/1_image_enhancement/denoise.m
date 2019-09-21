@@ -1,11 +1,13 @@
 function [ imOut ] = denoise( image, kernel_type, varargin)
 
+%The order of the inputs: image, kernel_type, kernel_size, (sigma if Gaussian)
+
 switch kernel_type
     case 'box'
-        fprintf('Not implemented\n')
+        imOut=imboxfilt(image,cell2mat(varargin(1)));
     case 'median'
-        fprintf('Not implemented\n')
+        imOut=medfilt2(image,[cell2mat(varargin(1)),cell2mat(varargin(1))]);
     case 'gaussian'
-        fprintf('Not implemented\n')
+        imOut=imfilter(image,gauss2D(cell2mat(varargin(2)),cell2mat(varargin(1))));
 end
 end
