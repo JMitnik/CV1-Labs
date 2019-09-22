@@ -116,7 +116,9 @@ fprintf('Number of orientations (theta): %d \n', length(orientations));
 fprintf('Number of carriers (lambda)   : %d \n', length(lambdas));
 fprintf('--------------------------------------\n')
 fprintf('Filter bank created in %.3f seconds.\n', ctime);
+
 fprintf('--------------------------------------\n')
+
 
 %% Filter images using Gabor filter bank using quadrature pairs (real and imaginary parts)
 % You will now filter the input image with each complex Gabor filter in
@@ -133,8 +135,8 @@ fprintf('--------------------------------------\n')
 %            explain what works better and why shortly in the report.
 featureMaps = cell(length(gaborFilterBank),1);
 for jj = 1 : length(gaborFilterBank)
-    real_out = imfilter(I, gaborFilterBank(jj).filterPairs(:, :, 1)); % \\TODO: filter the grayscale input with real part of the Gabor
-    imag_out =  imfilter(I, gaborFilterBank(jj).filterPairs(:, :, 2)); % \\TODO: filter the grayscale input with imaginary part of the Gabor
+    real_out = imfilter(img_gray, gaborFilterBank(jj).filterPairs(:, :, 1)); % \\TODO: filter the grayscale input with real part of the Gabor
+    imag_out =  imfilter(img_gray, gaborFilterBank(jj).filterPairs(:, :, 2)); % \\TODO: filter the grayscale input with imaginary part of the Gabor
     featureMaps{jj} = cat(3, real_out, imag_out);
 
     % Visualize the filter responses if you wish.
