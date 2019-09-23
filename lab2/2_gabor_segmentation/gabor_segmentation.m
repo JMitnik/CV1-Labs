@@ -10,7 +10,7 @@ err_msg  = 'Image not available.';
 
 % Control settings
 visFlag       = true;    %  Set to true to visualize filter responses.
-smoothingFlag = true;   %  Set to true to postprocess filter outputs.
+smoothingFlag = false;   %  Set to true to postprocess filter outputs.
 
 %% Read image
 switch image_id
@@ -213,12 +213,7 @@ features = reshape(features, numRows * numCols, []);
 
 
 % Standardize features.
-% \\ Hint: see http://ufldl.stanford.edu/wiki/index.php/Data_Preprocessing
-%          for more information. \\
-
-features = 0 % \\ TODO: i)  Implement standardization on matrix called features
-           %          ii) Return the standardized data matrix.
-
+features = (features - mean(features)) ./ (std(features) + 1);
 
 % (Optional) Visualize the saliency map using the first principal component
 % of the features matrix. It will be useful to diagnose possible problems
@@ -231,11 +226,8 @@ imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 
 % Apply k-means algorithm to cluster pixels using the data matrix,
 % features.
-% \\ Hint-1: doc kmeans
-% \\ Hint-2: use the parameter k defined in the first section when calling
-%            MATLAB's built-in kmeans function.
 tic
-pixLabels = 0 % \\TODO: Return cluster labels per pixel
+pixLabels = kmeans(features, k); % \\TODO: Return cluster labels per pixel
 ctime = toc;
 fprintf('Clustering completed in %.3f seconds.\n', ctime);
 
