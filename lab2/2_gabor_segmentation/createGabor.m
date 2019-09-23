@@ -53,7 +53,6 @@ rot_y = rot_XY(2,:);
 gaussianEnv = createGauss(rot_x, rot_y, gamma, sigma);
 
 % Create the orthogonal carrier signals.
-% \\ IMPLEMENT the helper functions createCos and createSin.
 cosCarrier = createCos(rot_x, lambda, psi);
 sinCarrier = createSin(rot_x, lambda, psi);
 
@@ -104,7 +103,7 @@ end
 function gaussEnv = createGauss(rot_x, rot_y, gamma, sigma)
 % ----------------------------------------------------------
 % Returns the 2D Gaussian Envelope.
-gaussEnv = exp(-(rot_x.^2 + gamma.^2 * rot_y.^2)/(2 * sigma.^2)); % \\TODO: Implement the Gaussian envelope.
+gaussEnv = exp(-(rot_x.^2 + gamma.^2 * rot_y.^2)/(2 * sigma.^2));
 
 % Reshape the vector representation to matrix.
 gaussEnv = reshape(gaussEnv, sqrt(length(gaussEnv)), []);

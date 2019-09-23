@@ -1,6 +1,6 @@
 %% Hyperparameters
 k        = 2;      % number of clusters in k-means algorithm. By default,
-                   % we consider k to be 2 in foreground-background segmentation task.
+
 image_id = 'Kobi'; % Identifier to switch between input images.
                    % Possible ids: 'Kobi',    'Polar', 'Robin-1'
                    %               'Robin-2', 'Cows', 'SciencePark'
@@ -9,8 +9,8 @@ image_id = 'Kobi'; % Identifier to switch between input images.
 err_msg  = 'Image not available.';
 
 % Control settings
-visFlag       = true;    %  Set to true to visualize filter responses.
-smoothingFlag = false;   %  Set to true to postprocess filter outputs.
+visFlag       = false;    %  Set to true to visualize filter responses.
+smoothingFlag = true;   %  Set to true to postprocess filter outputs.
 
 %% Read image
 switch image_id
@@ -45,7 +45,7 @@ img_gray = rgb2gray(img);
 % Display image
 figure(1), imshow(img), title(sprintf('Input image: %s', image_id));
 
-%% Design array of Gabor Filters
+% Design array of Gabor Filters
 % In this code section, you will create a Gabor Filterbank. A filterbank is
 % a collection of filters with varying properties (e.g. {shape, texture}).
 % A Gabor filterbank consists of Gabor filters of distinct orientations
@@ -93,10 +93,6 @@ for ii = 1:length(lambdas)
             gamma  = 0.5;
 
             % Create a Gabor filter with the specs above.
-            % (We also record the settings in which they are created. )
-            % // TODO: Implement the function createGabor() following
-            %          the guidelines in the given function template.
-            %          ** See createGabor.m for instructions ** //
             gaborFilterBank(filterNo).filterPairs = createGabor( sigma, theta, lambda, psi, gamma );
             gaborFilterBank(filterNo).sigma       = sigma;
             gaborFilterBank(filterNo).lambda      = lambda;
@@ -120,7 +116,7 @@ fprintf('Filter bank created in %.3f seconds.\n', ctime);
 fprintf('--------------------------------------\n')
 
 
-%% Filter images using Gabor filter bank using quadrature pairs (real and imaginary parts)
+% Filter images using Gabor filter bank using quadrature pairs (real and imaginary parts)
 % You will now filter the input image with each complex Gabor filter in
 % gaborFilterBank structure and store the output in the cell called
 % featureMaps.
@@ -134,9 +130,10 @@ fprintf('--------------------------------------\n')
 %            for padding. Find the one that works well. You might want to
 %            explain what works better and why shortly in the report.
 featureMaps = cell(length(gaborFilterBank),1);
+padding_option = 'replicate';
 for jj = 1 : length(gaborFilterBank)
-    real_out = imfilter(img_gray, gaborFilterBank(jj).filterPairs(:, :, 1)); % \\TODO: filter the grayscale input with real part of the Gabor
-    imag_out =  imfilter(img_gray, gaborFilterBank(jj).filterPairs(:, :, 2)); % \\TODO: filter the grayscale input with imaginary part of the Gabor
+    real_out = imfilter(im2double(img_gray), gaborFilterBank(jj).filterPairs(:, :, 1), padding_option, 'conv');
+    imag_out =  imfilter(im2double(img_gray), gaborFilterBank(jj).filterPairs(:, :, 2), padding_option, 'conv'); 
     featureMaps{jj} = cat(3, real_out, imag_out);
 
     % Visualize the filter responses if you wish.
@@ -146,14 +143,14 @@ for jj = 1 : length(gaborFilterBank)
                                                                                                               gaborFilterBank(jj).theta,...
                                                                                                               gaborFilterBank(jj).sigma));
         subplot(122), imshow(imag_out), title(sprintf('Im[h(x,y)], \\lambda = %f, \\theta = %f, \\sigma = %f',gaborFilterBank(jj).lambda,...
-                                                                                                              gaborFilterBank(jj).theta,...
+                                                                                                   gaborFilterBank(jj).theta,...
                                                                                                               gaborFilterBank(jj).sigma));
         pause(1)
     end
 end
 
 
-%% Compute the magnitude
+% Compute the magnitude
 % Now, you will compute the magnitude of the output responses.
 % \\ Hint: (real_part^2 + imaginary_part^2)^(1/2) \\
 featureMags =  cell(length(gaborFilterBank),1);
@@ -163,7 +160,7 @@ for jj = 1:length(featureMaps)
 
     %     Uint8 issues here, real_part are unsigned integers, so I cast it
     %     to double. Not sure if bug propagation.
-    featureMags{jj} = hypot(double(real_part), double(imag_part));
+    featureMags{jj} = hypot(real_part, imag_part);
 
     % Visualize the magnitude response if you wish.
     if visFlag
@@ -175,7 +172,7 @@ for jj = 1:length(featureMaps)
     end
 end
 
-%% Prepare and Preprocess features
+% Prepare and Preprocess features
 % You can think of each filter response as a sort of feature representation
 % for the pixels. Now that you have numFilters = |gaborFilterBank| filters,
 % we can represent each pixel by this many features.
@@ -187,15 +184,10 @@ end
 %          using an appropriate first order Gaussian kernel.
 % \\ Hint: doc imfilter, doc fspecial or doc imgaussfilt.
 features = zeros(numRows, numCols, length(featureMags));
-if smoothingFlag
-    % \\TODO:
-    %FOR_LOOP
+if smoothingFlag    
     for jj = 1:length(featureMags)
-        features(:,:,jj) = imgaussfilt(featureMags{jj});
+        features(:,:,jj) = imgaussfilt(featureMags{jj}, gaborFilterBank(jj).sigma);
     end
-        % i)  filter the magnitude response with appropriate Gaussian kernels
-        % ii) insert the smoothed image into features(:,:,jj)
-    %END_FOR
 else
     % Don't smooth but just insert magnitude images into the matrix
     % called features.
@@ -213,7 +205,12 @@ features = reshape(features, numRows * numCols, []);
 
 
 % Standardize features.
-features = (features - mean(features)) ./ (std(features) + 1);
+% numFilters = length(gaborFilterBank);
+% mean = sum(features,1)/(numRows * numCols);
+% sigma = sqrt(sum((features - mean).^2,1)/(numRows * numCols));
+% features = (features - mean)/sigma;
+
+features = (features - mean(features)) ./ (std(features));
 
 % (Optional) Visualize the saliency map using the first principal component
 % of the features matrix. It will be useful to diagnose possible problems
@@ -253,4 +250,6 @@ figure(6)
 imshowpair(Aseg1,Aseg2,'montage')
 
 
-
+% Save files
+features = reshape(features, numRows, numCols, size(features, 2));
+saveFeatureFile(gaborFilterBank, features);
