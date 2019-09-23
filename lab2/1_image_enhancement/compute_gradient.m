@@ -8,7 +8,6 @@ sobelY = sobelX';
 Gx = conv2(image, sobelX);
 Gy = conv2(image, sobelY);
 
-
 im_magnitude = round(rescale(hypot(double(Gx), double(Gy)), 0, 255));
 im_magnitude (isnan(im_magnitude)) = 0;
 im_direction = round(rescale(atan(double(Gy./Gx)), 0, 255));
