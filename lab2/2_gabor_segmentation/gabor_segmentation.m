@@ -39,6 +39,7 @@ switch image_id
 end
 
 % Image adjustments
+img = im2double(img);
 img      = imresize(img,resize_factor);
 img_gray = rgb2gray(img);
 
@@ -65,14 +66,18 @@ lambdaMax = hypot(numRows,numCols); % hypot calculates the square root of sum of
 % (or the central frequency of the carrier signal, which is 1/lambda)
 n = floor(log2(lambdaMax/lambdaMin));
 lambdas = 2.^(0:(n-2)) * lambdaMin;
-
+lambdas = lambdas(2);
 % Define the set of orientations for the Gaussian envelope.
 dTheta      = 2*pi/8;                  % \\ the step size
 orientations = 0:dTheta:(pi/2);
+orientations = orientations(2);
 
 % Define the set of sigmas for the Gaussian envelope. Sigma here defines
 % the standard deviation, or the spread of the Gaussian.
-sigmas = [1,2];
+sigmas = [1,2,3,4,5];
+sigmas = sigmas(2);
+
+gammas = 0.1:0.2:0.9;
 
 % Now you can create the filterbank. We provide you with a MATLAB struct
 % called gaborFilterBank in which we will hold the filters and their
@@ -85,21 +90,23 @@ filterNo = 1;
 for ii = 1:length(lambdas)
     for jj  = 1:length(sigmas)
         for ll = 1:length(orientations)
-            % Filter parameter configuration for this filter.
-            lambda = lambdas(ii);
-            sigma  = sigmas(jj);
-            theta  = orientations(ll);
-            psi    = 0;
-            gamma  = 0.5;
+            for gg = 1:length(gammas)
+                % Filter parameter configuration for this filter.
+                lambda = lambdas(ii);
+                sigma  = sigmas(jj);
+                theta  = orientations(ll);
+                psi    = 0;
+                gamma  = gammas(gg);
 
-            % Create a Gabor filter with the specs above.
-            gaborFilterBank(filterNo).filterPairs = createGabor( sigma, theta, lambda, psi, gamma );
-            gaborFilterBank(filterNo).sigma       = sigma;
-            gaborFilterBank(filterNo).lambda      = lambda;
-            gaborFilterBank(filterNo).theta       = theta;
-            gaborFilterBank(filterNo).psi         = psi;
-            gaborFilterBank(filterNo).gamma       = gamma;
-            filterNo = filterNo+1;
+                % Create a Gabor filter with the specs above.
+                gaborFilterBank(filterNo).filterPairs = createGabor( sigma, theta, lambda, psi, gamma );
+                gaborFilterBank(filterNo).sigma       = sigma;
+                gaborFilterBank(filterNo).lambda      = lambda;
+                gaborFilterBank(filterNo).theta       = theta;
+                gaborFilterBank(filterNo).psi         = psi;
+                gaborFilterBank(filterNo).gamma       = gamma;
+                filterNo = filterNo+1;
+            end
         end
     end
 end
@@ -132,8 +139,8 @@ fprintf('--------------------------------------\n')
 featureMaps = cell(length(gaborFilterBank),1);
 padding_option = 'replicate';
 for jj = 1 : length(gaborFilterBank)
-    real_out = imfilter(im2double(img_gray), gaborFilterBank(jj).filterPairs(:, :, 1), padding_option, 'conv');
-    imag_out =  imfilter(im2double(img_gray), gaborFilterBank(jj).filterPairs(:, :, 2), padding_option, 'conv'); 
+    real_out = imfilter((img_gray), gaborFilterBank(jj).filterPairs(:, :, 1), padding_option, 'conv');
+    imag_out =  imfilter((img_gray), gaborFilterBank(jj).filterPairs(:, :, 2), padding_option, 'conv'); 
     featureMaps{jj} = cat(3, real_out, imag_out);
 
     % Visualize the filter responses if you wish.
@@ -155,8 +162,8 @@ end
 % \\ Hint: (real_part^2 + imaginary_part^2)^(1/2) \\
 featureMags =  cell(length(gaborFilterBank),1);
 for jj = 1:length(featureMaps)
-    real_part = featureMaps{jj}(:,:,1);
-    imag_part = featureMaps{jj}(:,:,2);
+    real_part = (featureMaps{jj}(:,:,1));
+    imag_part = (featureMaps{jj}(:,:,2));
 
     %     Uint8 issues here, real_part are unsigned integers, so I cast it
     %     to double. Not sure if bug propagation.
@@ -210,7 +217,7 @@ features = reshape(features, numRows * numCols, []);
 % sigma = sqrt(sum((features - mean).^2,1)/(numRows * numCols));
 % features = (features - mean)/sigma;
 
-features = (features - mean(features)) ./ (std(features));
+features = (features - mean(features)) ./ (std(features) + 0.1);
 
 % (Optional) Visualize the saliency map using the first principal component
 % of the features matrix. It will be useful to diagnose possible problems
