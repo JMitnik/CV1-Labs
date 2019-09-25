@@ -1,7 +1,7 @@
 %% Hyperparameters
 k        = 2;      % number of clusters in k-means algorithm. By default,
 
-image_id = 'Kobi'; % Identifier to switch between input images.
+image_id = 'SciencePark'; % Identifier to switch between input images.
                    % Possible ids: 'Kobi',    'Polar', 'Robin-1'
                    %               'Robin-2', 'Cows', 'SciencePark'
 
@@ -39,7 +39,6 @@ switch image_id
 end
 
 % Image adjustments
-img = im2double(img);
 img      = imresize(img,resize_factor);
 img_gray = rgb2gray(img);
 
@@ -66,18 +65,25 @@ lambdaMax = hypot(numRows,numCols); % hypot calculates the square root of sum of
 % (or the central frequency of the carrier signal, which is 1/lambda)
 n = floor(log2(lambdaMax/lambdaMin));
 lambdas = 2.^(0:(n-2)) * lambdaMin;
-lambdas = lambdas(2);
+% lambdas = lambdas(1:5); %kobi
+% lambdas = lambdas(2:5); % polar
+% lambdas = lambdas(1:5); % robin-1
+% lambdas = lambdas(1); %robin-2
+% lambdas = lambdas(1); %cows
+lambdas = lambdas(1:5); %sp
+
 % Define the set of orientations for the Gaussian envelope.
-dTheta      = 2*pi/8;                  % \\ the step size
-orientations = 0:dTheta:(pi/2);
-orientations = orientations(2);
+dTheta       = 2*pi/8;                  % \\ the step size
+orientations = (0:dTheta:(pi/2));
 
 % Define the set of sigmas for the Gaussian envelope. Sigma here defines
 % the standard deviation, or the spread of the Gaussian.
-sigmas = [1,2,3,4,5];
-sigmas = sigmas(2);
-
-gammas = 0.1:0.2:0.9;
+% sigmas = [2,3,4]; %polar
+% sigmas = [1,2]; %kobi
+% sigmas = [2,3]; %robin-1
+% sigmas = [1,10]; %robin-2
+% sigmas = [0.5,1]; %cows
+sigmas = [1,2]; %sp
 
 % Now you can create the filterbank. We provide you with a MATLAB struct
 % called gaborFilterBank in which we will hold the filters and their
@@ -90,23 +96,22 @@ filterNo = 1;
 for ii = 1:length(lambdas)
     for jj  = 1:length(sigmas)
         for ll = 1:length(orientations)
-            for gg = 1:length(gammas)
-                % Filter parameter configuration for this filter.
-                lambda = lambdas(ii);
-                sigma  = sigmas(jj);
-                theta  = orientations(ll);
-                psi    = 0;
-                gamma  = gammas(gg);
+            % Filter parameter configuration for this filter.
+            lambda = lambdas(ii);
+            sigma  = sigmas(jj);
+            theta  = orientations(ll);
+            psi    = 0;
+            gamma  = 0.5;
 
-                % Create a Gabor filter with the specs above.
-                gaborFilterBank(filterNo).filterPairs = createGabor( sigma, theta, lambda, psi, gamma );
-                gaborFilterBank(filterNo).sigma       = sigma;
-                gaborFilterBank(filterNo).lambda      = lambda;
-                gaborFilterBank(filterNo).theta       = theta;
-                gaborFilterBank(filterNo).psi         = psi;
-                gaborFilterBank(filterNo).gamma       = gamma;
-                filterNo = filterNo+1;
-            end
+            % Create a Gabor filter with the specs above.
+            % (We also record the settings in which they are created. )
+            gaborFilterBank(filterNo).filterPairs = createGabor( sigma, theta, lambda, psi, gamma );
+            gaborFilterBank(filterNo).sigma       = sigma;
+            gaborFilterBank(filterNo).lambda      = lambda;
+            gaborFilterBank(filterNo).theta       = theta;
+            gaborFilterBank(filterNo).psi         = psi;
+            gaborFilterBank(filterNo).gamma       = gamma;
+            filterNo = filterNo+1;
         end
     end
 end
@@ -137,10 +142,15 @@ fprintf('--------------------------------------\n')
 %            for padding. Find the one that works well. You might want to
 %            explain what works better and why shortly in the report.
 featureMaps = cell(length(gaborFilterBank),1);
-padding_option = 'replicate';
+% padding = 'symmetric';
+padding = 'replicate';
+% padding = 'circular';  
 for jj = 1 : length(gaborFilterBank)
-    real_out = imfilter((img_gray), gaborFilterBank(jj).filterPairs(:, :, 1), padding_option, 'conv');
-    imag_out =  imfilter((img_gray), gaborFilterBank(jj).filterPairs(:, :, 2), padding_option, 'conv'); 
+    % Change dtype to double to store negative values
+    % img_gray = double(img_gray);
+    filter = gaborFilterBank(jj).filterPairs;
+    real_out = imfilter(img_gray, filter(:, :, 1), padding, 'conv');
+    imag_out =  imfilter(img_gray,filter(:, :, 2), padding, 'conv'); 
     featureMaps{jj} = cat(3, real_out, imag_out);
 
     % Visualize the filter responses if you wish.
@@ -162,17 +172,14 @@ end
 % \\ Hint: (real_part^2 + imaginary_part^2)^(1/2) \\
 featureMags =  cell(length(gaborFilterBank),1);
 for jj = 1:length(featureMaps)
-    real_part = (featureMaps{jj}(:,:,1));
-    imag_part = (featureMaps{jj}(:,:,2));
-
-    %     Uint8 issues here, real_part are unsigned integers, so I cast it
-    %     to double. Not sure if bug propagation.
-    featureMags{jj} = hypot(real_part, imag_part);
+    real_part = featureMaps{jj}(:,:,1);
+    imag_part = featureMaps{jj}(:,:,2);
+    featureMags{jj} = sqrt(im2double(real_part.^2 + imag_part.^2));
 
     % Visualize the magnitude response if you wish.
     if visFlag
         figure(3),
-        imshow(uint8(featureMags{jj})), title(sprintf('Re[h(x,y)], \\lambda = %f, \\theta = %f, \\sigma = %f',gaborFilterBank(jj).lambda,...
+        imshow(featureMags{jj}), title(sprintf('Re[h(x,y)], \\lambda = %f, \\theta = %f, \\sigma = %f',gaborFilterBank(jj).lambda,...
                                                                                                               gaborFilterBank(jj).theta,...
                                                                                                               gaborFilterBank(jj).sigma));
         pause(.3)
@@ -193,7 +200,13 @@ end
 features = zeros(numRows, numCols, length(featureMags));
 if smoothingFlag    
     for jj = 1:length(featureMags)
-        features(:,:,jj) = imgaussfilt(featureMags{jj}, gaborFilterBank(jj).sigma);
+        sigma = gaborFilterBank(jj).lambda;
+        % smoothing = 3; %kobi
+        % smoothing = 1; %polar        
+        % smoothing = 1; %robin-1
+        % smoothing = 4; %robin-2
+        smoothing = 10; %cows
+        features(:,:,jj) = imgaussfilt(featureMags{jj}, smoothing*sigma);
     end
 else
     % Don't smooth but just insert magnitude images into the matrix
@@ -203,6 +216,11 @@ else
     end
 end
 
+% X = 1:numCols;
+% Y = 1:numRows;
+% [X,Y] = meshgrid(X,Y);
+% features = cat(3,features,X);
+% features = cat(3,features,Y);
 
 % Reshape the filter outputs (i.e. tensor called features) of size
 % [numRows, numCols, numFilters] into a matrix of size [numRows*numCols, numFilters]
@@ -212,12 +230,9 @@ features = reshape(features, numRows * numCols, []);
 
 
 % Standardize features.
-% numFilters = length(gaborFilterBank);
-% mean = sum(features,1)/(numRows * numCols);
-% sigma = sqrt(sum((features - mean).^2,1)/(numRows * numCols));
-% features = (features - mean)/sigma;
-
-features = (features - mean(features)) ./ (std(features) + 0.1);
+% features = normalize(features);
+X = bsxfun(@minus, features, mean(features));
+X = bsxfun(@rdivide,features,std(features));
 
 % (Optional) Visualize the saliency map using the first principal component
 % of the features matrix. It will be useful to diagnose possible problems
@@ -231,7 +246,8 @@ imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 % Apply k-means algorithm to cluster pixels using the data matrix,
 % features.
 tic
-pixLabels = kmeans(features, k); % \\TODO: Return cluster labels per pixel
+% pixLabels = kmeans(features, k); % \\TODO: Return cluster labels per pixel
+pixLabels = kmeans(features,2,'Replicates',5);
 ctime = toc;
 fprintf('Clustering completed in %.3f seconds.\n', ctime);
 
@@ -255,8 +271,3 @@ Aseg1(BW) = img(BW);
 Aseg2(~BW) = img(~BW);
 figure(6)
 imshowpair(Aseg1,Aseg2,'montage')
-
-
-% Save files
-features = reshape(features, numRows, numCols, size(features, 2));
-saveFeatureFile(gaborFilterBank, features);
