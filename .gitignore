@@ -3,7 +3,6 @@
 *.m~
 *.pdf
 *.mlx
-*.pgm
 *.LOG
 *.info
 *.asv
