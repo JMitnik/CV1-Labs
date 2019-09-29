@@ -1,7 +1,6 @@
 function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot)
 %HARRISCORNERDETECTOR Detects corners in an image.
 %
-<<<<<<< HEAD
 %   H,r,c = HarrisCornerDetector(Img, threshold) detects corners  
 %   - ARGUMENTS
 %     Img       
