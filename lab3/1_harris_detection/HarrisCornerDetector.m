@@ -1,6 +1,7 @@
 function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot)
 %HARRISCORNERDETECTOR Detects corners in an image.
 %
+<<<<<<< HEAD
 %   H,r,c = HarrisCornerDetector(Img, threshold) detects corners  
 %   - ARGUMENTS
 %     Img       
@@ -13,7 +14,6 @@ function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot
 %
     % Img = imread('../person_toy/00000001.jpg');
     I = double(rgb2gray(Img))/255;
-
     sobelX = [1 0 -1; 2 0 -2; 1 0 -1];
     sobelY = sobelX';
 
