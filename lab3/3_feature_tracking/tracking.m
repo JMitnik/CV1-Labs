@@ -18,3 +18,6 @@ optical_flow = lucas_kanade(I1, I2, 15);
 
 % On image 3, we will again calcualte the optical-flow, and map the points
 % from image-2 to image 3.
+
+% For each of these, we write an image with scatter points to a frame. Each
+% of these frames will eventually be put into a VideoWriter
