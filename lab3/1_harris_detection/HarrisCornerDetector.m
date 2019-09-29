@@ -1,42 +1,53 @@
-function HarrisCornerDetector = myFun(input)
-%myFun - Description
+function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot)
+%HARRISCORNERDETECTOR Detects corners in an image.
 %
-% Syntax: HarrisCornerDetector = myFun(input)
+%   H,r,c = HarrisCornerDetector(Img, threshold) detects corners  
+%   - ARGUMENTS
+%     Img       
+%     threshold
+%   
+%   - OUTPUT
+%     H     Image with highlighted corners
+%     r     rows of detected corner points
+%     c     columns of detected corner points
 %
-I= imread('../person_toy/00000001.jpg');
-% Convert to grey scale first 
-I = rgb2gray(I);
+    % Img = imread('../person_toy/00000001.jpg');
+    I = double(rgb2gray(Img))/255;
 
-sobelX = [1 0 -1; 2 0 -2; 1 0 -1];
-sobelY = sobelX';
-sigma = 0.5
-% Apply first-order Gaussian, aka Sobel filter to find edge in x-dir
-I_x = imfilter(I, sobelY, 'conv');
-I_x_sq = I_x .^ 2;
-A = imgaussfilt(I_x_sq, sigma);
-% Apply first-order Gaussian, aka Sobel filter to find edge in y-dir
-I_y = imfilter(I, sobelX, 'conv');
-I_y_sq = I_y .^ 2;
-C = imgaussfilt(I_y_sq, sigma);
+    sobelX = [1 0 -1; 2 0 -2; 1 0 -1];
+    sobelY = sobelX';
 
-I_xy = I_x .* I_y;
-B = imgaussfilt(I_xy, sigma);
+    % Apply first-order Gaussian, aka Sobel filter to find edge in x-dir
+    I_x = imfilter(I, sobelX, 'conv');
+    I_x_sq = I_x .^ 2;
+    A = imgaussfilt(I_x_sq, sigma);
 
-H = (A .* C - B.^2) - 0.04*(A+C).^2;
+    % Apply first-order Gaussian, aka Sobel filter to find edge in y-dir
+    I_y = imfilter(I, sobelY, 'conv');
+    I_y_sq = I_y .^ 2;
+    C = imgaussfilt(I_y_sq, sigma);
 
-figure(1);
-imshow(A);
-title('I_x');
-figure(2);
-imshow(C);
-title('I_y');
+    I_xy = I_x .* I_y;
+    B = imgaussfilt(I_xy, sigma);
 
-figure(3);
-imshow(B);
-title('I_{xy}');
+    H = (A .* C - B.^2) - 0.04*((A+C).^2);
 
-figure(4);
-imshow(H);
-title('H');
+    % replaces each element in H by the orderth element
+    % in the sorted set of neighbors
+    % specified by the nonzero elements in domain.
+    H_filtered = ordfilt2(H, neighbors^2, ones(neighbors));
+    % Check if greater than neighbours and user defined threshold
+    corners = (H_filtered == H) & H > threshold; 
+    [r,c] = find(corners);
 
+    if plot
+        figure(1);
+        subplot(1,2,1);
+        imshow(I_x);
+        title('I_x Image Derivative');
+
+        subplot(1,2,2);
+        imshow(I_y);
+        title('I_y Image Derivative');
 end
+
