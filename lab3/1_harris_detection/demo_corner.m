@@ -15,7 +15,7 @@ threshold = 0.2;
 figure;
 imshow(Img2); hold on;
 scatter(c, r, 20, 'r');
-title("Sample: Pingpong"); hold off;   
+title("Sample: Pingpong"); hold off;
 
 Img3 = imrotate(Img1, 90);
 threshold = 0.05;
