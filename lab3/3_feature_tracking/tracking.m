@@ -3,11 +3,10 @@ function tracking(path_to_image_folder, path_to_video, WINDOW_SIZE_OPT_FLOW, HAR
     open(v_writer);
     SIGMA= 1;
     NEIGHBOURS = 70;
-    
+
     file_paths_jpg = fullfile(path_to_image_folder, '*.jpeg');
     file_paths_jpeg = fullfile(path_to_image_folder, '*.jpg');
     images = [dir(file_paths_jpg), dir(file_paths_jpeg)];
-    
 
     first_image = imread(fullfile(path_to_image_folder, images(1).name));
     [~, r, c] = HarrisCornerDetector(first_image, SIGMA, NEIGHBOURS, HARRIS_THRESHOLD, 0);
@@ -28,12 +27,11 @@ function tracking(path_to_image_folder, path_to_video, WINDOW_SIZE_OPT_FLOW, HAR
         vy = [vy, zeros(size(vy, 1), colPadding)];
         vx = [vx; zeros(size(vx, 2), rowPadding)'];
         vy = [vy; zeros(size(vy, 2), rowPadding)'];
-        
+
         % These are the new coordinates of c and r.
         [c, r] = calcMovement(c, r, vx, vy, T_Delta);
         imshow(I1); hold on;
         scatter(c, r, 20, 'r');
-        quiver(size(I1, 1), size(I1, 2), imgau(vx, , vy);
         title("Test"); hold off;
         frame = getframe(gcf);
         writeVideo(v_writer, frame);
