@@ -34,7 +34,7 @@ function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot
     % replaces each element in H by the orderth element
     % in the sorted set of neighbors
     % specified by the nonzero elements in domain.
-    H_filtered = ordfilt2(H, neighbors^2, ones(neighbors));
+    H_filtered = ordfilt2(abs(H), neighbors^2, ones(neighbors));
     % Check if greater than neighbours and user defined threshold
     corners = (H_filtered == H) & H > threshold; 
     [r,c] = find(corners);
