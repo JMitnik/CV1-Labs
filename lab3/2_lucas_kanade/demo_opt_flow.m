@@ -41,7 +41,7 @@ hold off;   %This code I found on the internet. This was the only way I was able
 
 
 %For the pther pictures
-?im1=imread("synth1.pgm");
+im1=imread("synth1.pgm");
 im2=imread("synth2.pgm");
 image1=cat(3,im1,im1,im1);
 image2=cat(3,im2,im2,im2);
