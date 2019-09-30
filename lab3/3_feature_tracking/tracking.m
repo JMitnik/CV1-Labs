@@ -1,49 +1,42 @@
-function tracking(path_to_image_folder)
-    v_writer = VideoWriter('test.mp4', 'MPEG-4');
+function tracking(path_to_image_folder, path_to_video, WINDOW_SIZE_OPT_FLOW, HARRIS_THRESHOLD, T_Delta)
+    v_writer = VideoWriter(path_to_video, 'MPEG-4');
     open(v_writer);
     SIGMA= 1;
-    NEIGHBOURS = 10;
-    WINDOW_SIZE_OPT_FLOW = 15;
-    THRESHOLD = 0.2;
+    NEIGHBOURS = 70;
+    
+    file_paths_jpg = fullfile(path_to_image_folder, '*.jpeg');
+    file_paths_jpeg = fullfile(path_to_image_folder, '*.jpg');
+    images = [dir(file_paths_jpg), dir(file_paths_jpeg)];
+    
 
-    % Read input files from the img-path
-%     TODO: Allow for jpegs and jpg
-    file_paths = fullfile(path_to_image_folder, '*.jpeg');
-    images = dir(file_paths);
-
-    % Apply H-detection on the first image
     first_image = imread(fullfile(path_to_image_folder, images(1).name));
-    [~, r, c] = HarrisCornerDetector(first_image, SIGMA, NEIGHBOURS, THRESHOLD, 0);
-
-    % Calculate the optical flow with the next image
-    % second_image = imread(fullfile(path_to_image_folder, images(2).name));
-    % optical_flow = lucas_kanade(first_image, second_image, WINDOW_SIZE_OPT_FLOW);
+    [~, r, c] = HarrisCornerDetector(first_image, SIGMA, NEIGHBOURS, HARRIS_THRESHOLD, 0);
 
     for idx = 1:length(images) - 1
-        I1 = rgb2gray(imread(fullfile(path_to_image_folder, images(idx).name)));
-        I2 = rgb2gray(imread(fullfile(path_to_image_folder, images(idx + 1).name)));
+        I1 = imread(fullfile(path_to_image_folder, images(idx).name));
+        I2 = imread(fullfile(path_to_image_folder, images(idx + 1).name));
 
         optical_flow = lucas_kanade(I1, I2, WINDOW_SIZE_OPT_FLOW);
         [vx, vy] = interpret_optical_flow(optical_flow);
         vx = repelem(vx, WINDOW_SIZE_OPT_FLOW, WINDOW_SIZE_OPT_FLOW);
         vy = repelem(vy, WINDOW_SIZE_OPT_FLOW, WINDOW_SIZE_OPT_FLOW);
 
+        % Pad matrices / elements and such
         rowPadding = size(I1,1) - size(vx,1);
         colPadding = size(I1,2) - size(vx,2);
         vx = [vx, zeros(size(vx, 1), colPadding)];
         vy = [vy, zeros(size(vy, 1), colPadding)];
-        
         vx = [vx; zeros(size(vx, 2), rowPadding)'];
         vy = [vy; zeros(size(vy, 2), rowPadding)'];
-
-        [c, r] = calcMovement(c, r, vx, vy);
-%         figure(idx);
+        
+        % These are the new coordinates of c and r.
+        [c, r] = calcMovement(c, r, vx, vy, T_Delta);
         imshow(I1); hold on;
         scatter(c, r, 20, 'r');
+        quiver(size(I1, 1), size(I1, 2), imgau(vx, , vy);
         title("Test"); hold off;
         frame = getframe(gcf);
         writeVideo(v_writer, frame);
-%         drawnow
     end
 
     close(v_writer)
@@ -61,12 +54,11 @@ end
 % of these frames will eventually be put into a VideoWriter
 
 
-function [c_new, r_new] = calcMovement(c, r, vx, vy)
-    BOOST_VECTOR = 10;
+function [c_new, r_new] = calcMovement(c, r, vx, vy, T_Delta)
 
     c_new = zeros(length(c), 1);
     r_new = zeros(length(r), 1);
-    
+
     max_r = size(vx, 1);
     max_c = size(vx, 2);
 
@@ -76,10 +68,7 @@ function [c_new, r_new] = calcMovement(c, r, vx, vy)
         r_cood = r(idx);
         new_x = vx(r_cood, c_cood);
         new_y = vy(r_cood, c_cood);
-        r_new(idx) = min(max(1, round(r(idx) + BOOST_VECTOR * new_y)), max_r);
-        c_new(idx) = min(max(1, round(c(idx) + BOOST_VECTOR * new_x)), max_c);
-%         
-%         r_new(idx) = round(r(idx) + BOOST_VECTOR * new_y);
-%         c_new(idx) = round(c(idx) + BOOST_VECTOR * new_x);
+        r_new(idx) = min(max(1, round(r(idx) + T_Delta * new_y)), max_r);
+        c_new(idx) = min(max(1, round(c(idx) + T_Delta * new_x)), max_c);
     end
 end
