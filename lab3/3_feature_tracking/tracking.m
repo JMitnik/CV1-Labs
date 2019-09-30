@@ -1,6 +1,8 @@
 function tracking(path_to_image_folder, path_to_video, WINDOW_SIZE_OPT_FLOW, HARRIS_THRESHOLD, T_Delta, SIGMA, NEIGHBOURS)
     % Initialize writer
     v_writer = VideoWriter(path_to_video, 'MPEG-4');
+    v_writer.Quality = 60;
+    v_writer.FrameRate = 15;
     open(v_writer);
 
     % Grab all jpgs
@@ -38,7 +40,7 @@ function tracking(path_to_image_folder, path_to_video, WINDOW_SIZE_OPT_FLOW, HAR
 
         % Plot c, r and store in the video
         imshow(I1); hold on;
-        scatter(c, r, 20, 'purple');
+        scatter(c, r, 20, 'b');
         title("Test"); hold off;
         frame = getframe(gcf);
         writeVideo(v_writer, frame);
