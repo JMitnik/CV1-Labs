@@ -16,12 +16,12 @@ function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot
     sobelX = [1 0 -1; 2 0 -2; 1 0 -1];
     sobelY = sobelX';
 
-    % Apply first-order Gaussian, aka Sobel filter to find edge in x-dir
+    % Apply first-order Gaussian, aka Sobel filter to find edge in y-dir
     I_x = imfilter(I, sobelX, 'conv');
     I_x_sq = I_x .^ 2;
     A = imgaussfilt(I_x_sq, sigma);
 
-    % Apply first-order Gaussian, aka Sobel filter to find edge in y-dir
+    % Apply first-order Gaussian, aka Sobel filter to find edge in x-dir
     I_y = imfilter(I, sobelY, 'conv');
     I_y_sq = I_y .^ 2;
     C = imgaussfilt(I_y_sq, sigma);
