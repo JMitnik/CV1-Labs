@@ -6,7 +6,7 @@ function [opt_flow] = lucas_kanade(image1,image2,window_size)
 %returning them as a 2D-cell array. Each element of this cell array is a vector (the optical flow) 
 
 
-[r,c]=size(image1); %Getting the size of the image
+[r,c,t]=size(image1); %Getting the size of the image
 result_r=floor(r/window_size); %The sizes of the result matrix.
 result_c=floor(c/window_size);
 
@@ -48,6 +48,10 @@ for i=1:result_r
         
     end
 end
+
+
+end
+
 
 
 end
