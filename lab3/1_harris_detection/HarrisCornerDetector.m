@@ -28,9 +28,12 @@ function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot
 
     I_xy = I_x .* I_y;
     B = imgaussfilt(I_xy, sigma);
-
+    
+    %Harris
     H = (A .* C - B.^2) - 0.04*((A+C).^2);
-
+    %Shi and Tomasi
+    %H = min(A, C);
+    
     % replaces each element in H by the orderth element
     % in the sorted set of neighbors
     % specified by the nonzero elements in domain.
