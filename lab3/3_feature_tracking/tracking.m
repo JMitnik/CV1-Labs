@@ -2,7 +2,6 @@ function tracking(path_to_image_folder, path_to_video, WINDOW_SIZE_OPT_FLOW, HAR
     % Initialize writer
     v_writer = VideoWriter(path_to_video, 'MPEG-4');
     v_writer.Quality = 60;
-    v_writer.FrameRate = 15;
     open(v_writer);
 
     % Grab all jpgs
@@ -32,15 +31,17 @@ function tracking(path_to_image_folder, path_to_video, WINDOW_SIZE_OPT_FLOW, HAR
         colPadding = size(I1,2) - size(vx,2);
         vx = [vx, zeros(size(vx, 1), colPadding)];
         vy = [vy, zeros(size(vy, 1), colPadding)];
-        vx = [vx; zeros(size(vx, 2), rowPadding)'];
-        vy = [vy; zeros(size(vy, 2), rowPadding)'];
+        vx = [vx; zeros(rowPadding, size(vx, 2))];
+        vy = [vy; zeros(rowPadding, size(vy, 2))];
 
         % Calculate the new c and r
-        [c, r] = calcMovement(c, r, vx, vy, T_Delta);
+        [c, r, vx_points, vy_points] = calcMovement(c, r, vx, vy, T_Delta);
 
         % Plot c, r and store in the video
+        f = figure('visible', 'off');
         imshow(I1); hold on;
         scatter(c, r, 20, 'b');
+        quiver(c,r,vx_points, vy_points);
         title("Test"); hold off;
         frame = getframe(gcf);
         writeVideo(v_writer, frame);
@@ -49,10 +50,12 @@ function tracking(path_to_image_folder, path_to_video, WINDOW_SIZE_OPT_FLOW, HAR
     close(v_writer)
 end
 
-function [c_new, r_new] = calcMovement(c, r, vx, vy, T_Delta)
+function [c_new, r_new, vx_points, vy_points] = calcMovement(c, r, vx, vy, T_Delta)
     % New parameters will have the same length as before
     c_new = zeros(length(c), 1);
     r_new = zeros(length(r), 1);
+    vx_points = zeros(length(c), 1);
+    vy_points = zeros(length(r), 1);
 
     % Boundary of the points, where c is maxX and r maxY
     max_c = size(vx, 2);
@@ -62,11 +65,12 @@ function [c_new, r_new] = calcMovement(c, r, vx, vy, T_Delta)
     for idx=1:length(c)
         c_xy = c(idx);
         r_xy = r(idx);
-        vx_xy = vx(r_xy, c_xy);
-        vy_xy = vy(r_xy, c_xy);
+        vx_xy = vx(r_xy, c_xy) * T_Delta;
+        vy_xy = vy(r_xy, c_xy) * T_Delta;
+        vx_points(idx) = vx_xy;
+        vy_points(idx) = vy_xy;
 
-        % TODO [Uncertainty]: Vx_xy and vy_xy swapped or not?
-        c_new(idx) = min(max(1, round(c(idx) + T_Delta * vx_xy)), max_c);
-        r_new(idx) = min(max(1, round(r(idx) + T_Delta * vy_xy)), max_r);
+        c_new(idx) = min(max(1, round(c(idx) + vx_xy)), max_c);
+        r_new(idx) = min(max(1, round(r(idx) + vy_xy)), max_r);
     end
 end
