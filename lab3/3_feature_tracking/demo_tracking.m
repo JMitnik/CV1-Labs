@@ -8,7 +8,7 @@ addpath(fullfile(newdir, '2_lucas_kanade/'));
 path_to_toy_video = '../person_toy/';
 path_to_pp_video = '../pingpong/';
 
-tdelt = 25;
+tdelt = 20;
 hthres = 0.05;
 window_size = 5;
 sigma = 2;
