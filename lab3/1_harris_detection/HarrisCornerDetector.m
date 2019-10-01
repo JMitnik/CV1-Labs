@@ -1,11 +1,11 @@
 function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot)
 %HARRISCORNERDETECTOR Detects corners in an image.
 %
-%   H,r,c = HarrisCornerDetector(Img, threshold) detects corners  
+%   H,r,c = HarrisCornerDetector(Img, threshold) detects corners
 %   - ARGUMENTS
-%     Img       
+%     Img
 %     threshold
-%   
+%
 %   - OUTPUT
 %     H     Image with highlighted corners
 %     r     rows of detected corner points
@@ -28,18 +28,18 @@ function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot
 
     I_xy = I_x .* I_y;
     B = imgaussfilt(I_xy, sigma);
-    
+
     %Harris
     H = (A .* C - B.^2) - 0.04*((A+C).^2);
     %Shi and Tomasi
     %H = min(A, C);
-    
+
     % replaces each element in H by the orderth element
     % in the sorted set of neighbors
     % specified by the nonzero elements in domain.
     H_filtered = ordfilt2(abs(H), neighbors^2, ones(neighbors));
     % Check if greater than neighbours and user defined threshold
-    corners = (H_filtered == H) & H > threshold; 
+    corners = (H_filtered == H) & H > threshold;
     [r,c] = find(corners);
 
     if plot

@@ -14,7 +14,7 @@ Img2 = imread('../pingpong/0000.jpeg');
 figure;
 imshow(Img2); hold on;
 scatter(c, r, 30, 'y');
-title("Sample: Pingpong"); hold off;   
+title("Sample: Pingpong"); hold off;
 
 Img3 = imrotate(Img1, 90);
 [H, r, c] = HarrisCornerDetector(Img3, sigma, neighbors, threshold, 0);

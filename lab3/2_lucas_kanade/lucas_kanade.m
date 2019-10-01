@@ -4,9 +4,9 @@ function [opt_flow] = lucas_kanade(image1,image2,window_size)
 %time t+dt. This function divides the input image into window_size*window_ pixel
 %subimages and computes the optical flow for each of these subimages,
 %returning them as a 2D-cell array. Each element of this cell array is a vector (the optical flow) 
+warning('off', 'MATLAB:singularMatrix');
 
-
-[r,c]=size(image1); %Getting the size of the image
+[r,c,t]=size(image1); %Getting the size of the image
 result_r=floor(r/window_size); %The sizes of the result matrix.
 result_c=floor(c/window_size);
 
@@ -43,12 +43,13 @@ for i=1:result_r
         
         %Computing the optical flow
         opt_flow{i,j}=linsolve(A_tr*A,A_tr*Gt);
-        
-       
-        
     end
 end
 
 
 end
+
+
+
+
 
