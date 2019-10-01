@@ -1,12 +1,5 @@
-% Adding dependencies
-mydir  = pwd;
-idcs   = strfind(mydir,'/');
-newdir = mydir(1:idcs(end)-1);
-
-addpath(fullfile(newdir, '1_harris_detection/'));
-addpath(fullfile(newdir, '2_lucas_kanade/'));
-path_to_toy_video = '../person_toy/';
-path_to_pp_video = '../pingpong/';
+path_to_toy_video = 'person_toy/';
+path_to_pp_video = 'pingpong/';
 
 tdelt = 20;
 hthres = 0.05;

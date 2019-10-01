@@ -8,7 +8,6 @@ function [px, py] = interpret_optical_flow(optical_flow)
 
 px=zeros(rows_size, columns_size);
 py=zeros(rows_size, columns_size);
-
 for i=1:rows_size
     for j=1:columns_size
         temp=optical_flow{i,j};
