@@ -9,7 +9,7 @@ path_to_toy_video = '../person_toy/';
 path_to_pp_video = '../pingpong/';
 
 tdelt = 25;
-hthres = 0.10;
+hthres = 0.05;
 window_size = 5;
 sigma = 2;
 neighbors = 10;
