@@ -19,16 +19,16 @@ function [keypoint_matchings] = keypoint_matching(im1, im2)
     % scatter(fb(1,matches(2,:)), fb(2,matches(2,:)), 50, 'filled','b'); hold off;
 
     big_img = cat(2,im1,im2);
-    imshow(big_img); hold on;
-    x1 = fa(1,matches(1,1:2));
-    y1 = fa(2,matches(1,1:2));
-    x2 = fb(1,matches(2,1:2))+size(im1,2);
-    y2 = fb(2,matches(2,1:2));
+    imshowpair(im1, im2, 'montage'); hold on;
+    x1 = fa(1,matches(1,:));
+    y1 = fa(2,matches(1,:));
+    x2 = fb(1,matches(2,:))+size(im1,2);
+    y2 = fb(2,matches(2,:));
     scatter(x1, y1, 50, 'filled','b');
     scatter(x2, y2, 50, 'filled','b');
-    for i = 1:size(x1)
-        hold on;
+    hold on
+    for i = 1:length(x1)
         plot([x1(i) x2(i)], [y1(i) y2(i)]);
-        hold off;
     end
+    hold off
 end
