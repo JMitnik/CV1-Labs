@@ -6,7 +6,7 @@ function [H, r, c] = HarrisCornerDetector(Img, sigma, neighbors, threshold, plot
 %     Img       
 %     threshold
 %   
-%   - OUTPUT
+%   - OUTPUTc
 %     H     Image with highlighted corners
 %     r     rows of detected corner points
 %     c     columns of detected corner points
