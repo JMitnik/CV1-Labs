@@ -9,7 +9,7 @@ function plot_matches(im1, im2, matches)
 
     x2 = x2 +size(im1,2);
     
-    figure;
+    figure(1);
     imshow(joined_img); hold on;
     title('Keypoint matches');
     scatter(x1, y1, 50, 'filled','b');

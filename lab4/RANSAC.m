@@ -1,4 +1,4 @@
-function [best_transformation] = RANSAC(total_matches, im1, im2, N, P, radius_size)
+function [best_transformation] = RANSAC(total_matches, im1, im2, N, P, radius_size, use_plot)
 %RANSAC - Description
 %
 % Syntax: [best_transformation] = RANSAC(input)
@@ -34,12 +34,14 @@ function [best_transformation] = RANSAC(total_matches, im1, im2, N, P, radius_si
         % 3. Solve equation Ax=b, by using x = pinv(A)*b
         x = pinv(p_A)*p_b;
 
-        % 4. Apply x to image1, transforming image1 to image2
+        % 4. Apply x to image1, transforming image1 to b
         A = createAffineMatrix(x1', y1');
         b = A * x;
         b = reshape(b, 2, []);
-        plot_matches(im1, im2, [x1; y1; b(1, :); b(2, :)]);
-
+        
+        if use_plot
+            plot_matches(im1, im2, [x1; y1; b(1, :); b(2, :)]);
+        end
 
         % 5. Count inliers: for each transformed pixel, check that it is within 10
         %    pixels of the corresponding match of pixel 2
@@ -51,8 +53,17 @@ function [best_transformation] = RANSAC(total_matches, im1, im2, N, P, radius_si
             best_transformation = x;
         end
     end
+    
+    % Use the m-values and map these to an affine2d transformation.     
+    % TODO: Debug this: values aren't good yet.
+    t_form = affine2d([best_transformation(1), best_transformation(2), 0; 
+        best_transformation(3), best_transformation(4), 0; 
+        best_transformation(5) best_transformation(6) 1]);
+    
+    % Apply transform and show
+    trans_im = imwarp(im1, t_form);
+    imshow(trans_im);
 
-    % Transform image1 by rounding the coordinates (==nearest neighbours?)
 end
 
 function [A] = createAffineMatrix(x1, y1)
