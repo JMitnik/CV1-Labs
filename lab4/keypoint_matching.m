@@ -1,4 +1,4 @@
-function [keypoint_matchings] = keypoint_matching(im1, im2)
+function keypoint_matchings = keypoint_matching(im1, im2)
 %keypoint_matching - Description
 %
 % Syntax: keypoint_matching = keypoint_matching(input)
@@ -12,7 +12,7 @@ function [keypoint_matchings] = keypoint_matching(im1, im2)
     % right image to fall on the right side of the joined-image)
     x1 = fa(1,matches(1,:));
     y1 = fa(2,matches(1,:));
-    x2 = fb(1,matches(2,:))+size(im1,2);
+    x2 = fb(1,matches(2,:));
     y2 = fb(2,matches(2,:));
 
     % Keypoint matchings have 4 rows, row1 being the x-coordinates of image1, row2 being

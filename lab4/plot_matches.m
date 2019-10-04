@@ -7,6 +7,8 @@ function plot_matches(im1, im2, matches)
 
     joined_img = cat(2,im1,im2);
 
+    x2 = x2 +size(im1,2);
+    
     figure;
     imshow(joined_img); hold on;
     title('Keypoint matches');
