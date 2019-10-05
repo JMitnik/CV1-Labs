@@ -14,7 +14,10 @@ figure(1);
 plot_matches(im1, im2, sampled_keypoint_matchings);
 
 % Perform RANSAC and get the best transformation (?)
-best_transformation = RANSAC(keypoint_matchings, im1, im2, 10, 10, 10, false);
+default_N = 10;
+default_P = 10;
+radius_size = 10;
+best_transformation = RANSAC(keypoint_matchings, im1, im2, default_N, default_P, radius_size, false);
 
 % Perform transformation from im1 to im2, and back (im2 to im1)
 T = [best_transformation(1), best_transformation(3),0
@@ -25,9 +28,9 @@ transformation = affine2d(T);
 figure(2);
 im1_to_im2 = imwarp(im1, transformation);
 imshow(im1_to_im2);
+title('Image 1 transformed to image 2');
 
 figure(3);
 im2_to_im1 = imwarp(im2, invert(transformation));
 imshow(im2_to_im1);
-
-% Scatter all points and plot the lines between the points
+title('Image 2 transformed to image 1');
