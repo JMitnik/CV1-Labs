@@ -38,7 +38,7 @@ function [best_transformation] = RANSAC(total_matches, im1, im2, N, P, radius_si
         A = createAffineMatrix(x1', y1');
         b = A * x;
         b = reshape(b, 2, []);
-        
+
         if use_plot
             plot_matches(im1, im2, [x1; y1; b(1, :); b(2, :)]);
         end
@@ -53,17 +53,6 @@ function [best_transformation] = RANSAC(total_matches, im1, im2, N, P, radius_si
             best_transformation = x;
         end
     end
-    
-    % Use the m-values and map these to an affine2d transformation.     
-    % TODO: Debug this: values aren't good yet.
-    t_form = affine2d([best_transformation(1), best_transformation(2), 0; 
-        best_transformation(3), best_transformation(4), 0; 
-        best_transformation(5) best_transformation(6) 1]);
-    
-    % Apply transform and show
-    trans_im = imwarp(im1, t_form);
-    imshow(trans_im);
-
 end
 
 function [A] = createAffineMatrix(x1, y1)
