@@ -6,6 +6,9 @@ im2 = imread('boat2.pgm');
 % Extract the keypoint matchings between the two images
 keypoint_matchings = keypoint_matching(im1, im2);
 
+% Optional: Uncomment for ALL points
+% plot_matches(im1, im2, keypoint_matchings);
+
 % Select set_size random samples from keypoint_matchings,
 % and plot these on the image.
 sampled_keypoint_matchings = sample_keypoint_matchings(keypoint_matchings, 10);
