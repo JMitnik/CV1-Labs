@@ -16,11 +16,4 @@ function plot_matches(im1, im2, matches, plot_title)
 
     % Method 1: Just as vectors
     plot([x1; x2], [y1; y2], 'LineWidth', 2);
-
-    % Method 2: Using a for loop (temporarily commented)
-    % hold on
-    % for i = 1:length(x1)
-    %     plot([x1(i) x2(i)], [y1(i) y2(i)]);
-    % end
-    % hold off
 end

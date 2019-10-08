@@ -1,6 +1,6 @@
 function [new_im] = create_transformed_image(im, transformation_matrix)
     [x, y] = size(im);
-    T = transformation_matrix(1:2,1:2)^-1;
+    T = transformation_matrix(1:2,1:2);
     new_im = zeros(2*x, 2*y, 'uint8');
 
     % Loop over shifted image coordinates

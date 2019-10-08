@@ -1,7 +1,7 @@
 % Read in the images
 % ? Do we turn these into singles here already?
-im1 = (imread('boat1.pgm'));
-im2 = (imread('boat2.pgm'));
+im1 = (imread('left.jpg'));
+im2 = (imread('right.jpg'));
 
 try
     im1 = rgb2gray(im1);
@@ -9,7 +9,7 @@ try
 catch
 %     Nothing
 end
-
+%
 try
     im2 = imresize(im2,size(im1));
 catch
@@ -31,43 +31,28 @@ sampled_keypoint_matchings = sample_keypoint_matchings(keypoint_matchings, 10);
 % plot_matches(im1, im2, sampled_keypoint_matchings, 'keypoint matchings');
 
 % Perform RANSAC and get the best transformation (?)
-default_N = 100;
-default_P = 20;
+default_N = 10;
+default_P = min(20, length(keypoint_matchings));
 radius_size = 10;
 best_transformation = RANSAC(keypoint_matchings, im1, im2, default_N, default_P, radius_size, false);
 
-
-% Perform nearest neighbour
-
 % Perform transformation from im1 to im2, and back (im2 to im1)
- T = [best_transformation(1), best_transformation(3),0
+
+T = [best_transformation(1), best_transformation(3),0
      best_transformation(2), best_transformation(4), 0
      best_transformation(5), best_transformation(6), 1];
+transformation = affine2d(T);
 
-% T = [best_transformation(1), best_transformation(3),0
-%     best_transformation(2), best_transformation(4), 0
-%     best_transformation(5), best_transformation(6), 1];
-
-im1_to_im2 = create_transformed_image(im1, T);
+im1_to_im2 = create_transformed_image(im1, T^-1);
+% im1_to_im2 = imwarp(im1, transformation);
 imshow(im1_to_im2);
+title('Image 1 transformed to image 2');
 
-% Using Imwarp
-% figure(4);
-% im1_to_im2 = imwarp(im1, transformation);
-% imshow(im1_to_im2);
-% title('Image 1 transformed to image 2');
-
-% figure(5);
+% Using 'Nearest neighbours'
+im2_to_im1 = create_transformed_image(im2, T);
 % im2_to_im1 = imwarp(im2, invert(transformation));
-% imshow(im2_to_im1);
-% title('Image 2 transformed to image 1');
+% Using imwarp
 
-% figure(4);
-% im1_to_im2 = imwarp(im1, transformation);
-% imshow(im1_to_im2);
-% title('Image 1 transformed to image 2');
-
-% figure(5);
-% im2_to_im1 = imwarp(im2, invert(transformation));
-% imshow(im2_to_im1);
-% title('Image 2 transformed to image 1');
+figure(4);
+imshow(im2_to_im1);
+title('Image 2 transformed to image 1');
