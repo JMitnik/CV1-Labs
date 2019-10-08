@@ -4,9 +4,9 @@ function keypoint_matchings = keypoint_matching(im1, im2)
 % Syntax: keypoint_matching = keypoint_matching(input)
     % Extract features and descriptors from both images, and their matching
     % indices and distance in scores.
-    [fa, da] = vl_sift(single(im1));
-    [fb, db] = vl_sift(single(im2));
-    [matches, scores] = vl_ubcmatch(da, db);
+    [fa, da] = vl_sift(single(im1), 'PeakThresh', 2);
+    [fb, db] = vl_sift(single(im2), 'PeakThresh', 2);
+    [matches, scores] = vl_ubcmatch(da, db, 2);
 
     % Extract the (x,y) coordinates from the matches (shift the x for the
     % right image to fall on the right side of the joined-image)
