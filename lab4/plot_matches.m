@@ -1,4 +1,4 @@
-function plot_matches(im1, im2, matches)
+function plot_matches(im1, im2, matches, plot_title)
     % Matches contains rows x1, y1, x2, y2
     x1 = matches(1, :);
     y1 = matches(2, :);
@@ -10,7 +10,7 @@ function plot_matches(im1, im2, matches)
     x2 = x2 +size(im1,2);
     
     imshow(joined_img); hold on;
-    title('Keypoint matches');
+    title(plot_title);
     scatter(x1, y1, 50, 'filled','b');
     scatter(x2, y2, 50, 'filled','b');
 

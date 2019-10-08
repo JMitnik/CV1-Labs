@@ -18,6 +18,12 @@ function [best_transformation] = RANSAC(total_matches, im1, im2, N, P, radius_si
     for idx=1:N
         % 1. Sample P elements using sample_matches(plot=False)
         subset_matches = sample_keypoint_matchings(total_matches, P);
+        
+        if use_plot
+            figure(3);
+            plot_matches(im1, im2, subset_matches, 'Matches before transformation');
+        end
+
         p_x1 = subset_matches(1, :);
         p_y1 = subset_matches(2, :);
         p_x2 = subset_matches(3, :);
@@ -32,7 +38,7 @@ function [best_transformation] = RANSAC(total_matches, im1, im2, N, P, radius_si
         p_b = [p_x2'; p_y2'];
 
         % 3. Solve equation Ax=b, by using x = pinv(A)*b
-        x = pinv(p_A)*p_b;
+        x = linsolve(p_A, p_b);
 
         % 4. Apply x to image1, transforming image1 to b
         A = createAffineMatrix(x1', y1');
@@ -40,7 +46,8 @@ function [best_transformation] = RANSAC(total_matches, im1, im2, N, P, radius_si
         b = reshape(b, 2, []);
 
         if use_plot
-            plot_matches(im1, im2, [x1; y1; b(1, :); b(2, :)]);
+            figure(4);
+            plot_matches(im1, im2, [x1; y1; b(1, :); b(2, :)], 'Matches after transformation');
         end
 
         % 5. Count inliers: for each transformed pixel, check that it is within 10
