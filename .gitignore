@@ -12,3 +12,5 @@ lab1/cv1_labs_1.pdf
 **/*.pdf
 **/results/*
 **/vlfeat-0.9.21
+
+*.mat
