@@ -42,7 +42,7 @@ encodings = encode_images(train_X, vocab, COLOR_SPACE, SAMPLING_MODE);
 %%%
 % 5. Classification
 %%%
-
+model = svmtrain(train_y, encodings);
 
 %%%
 % 6. Evaluation
