@@ -1,4 +1,4 @@
-function features = extract_features(X, color_space, sampling_mode)
+function features = extract_features(X, color_space, sampling_mode, DENSE_SIFT_STEP_SIZE)
 
     IMAGE_W = 96;
     IMAGE_H = 96;
@@ -47,7 +47,7 @@ function features = extract_features(X, color_space, sampling_mode)
             end
 
             if strcmp(sampling_mode, 'dense_SIFT')
-                [~, descriptors] = vl_dsift(img(:, :, channel));
+                [~, descriptors] = vl_dsift(img(:, :, channel), 'STEP', DENSE_SIFT_STEP_SIZE);
             end
 
             descriptors = double(descriptors);
