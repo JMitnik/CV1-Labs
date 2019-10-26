@@ -3,8 +3,7 @@ function [sampled_X, sampled_y] = sample_points_per_class(X, y, nr_per_class)
     % corresponding y
     % Precondition: X and y are equal size
     % Get all unique values
-    unique_classes = [1, 2, 3, 7, 9];
-
+    unique_classes = unique(y);
     sampled_X = zeros(1, size(X, 2));
     sampled_y = zeros(1, size(y, 2));
 

@@ -16,9 +16,7 @@ function encodings = encode_images(X, vocab, color_space, sampling_mode)
         % Perform hist over `code_words` => We should get a vocab-sized hist which is
         % our histogram representation.
         % TODO: DEBUG if this is how we want it
-        hist_words = histogram(code_words, size(vocab,1), 'Normalization', 'probability');
-        hist_words = hist_words.Values;
-
+        hist_words = histcounts(code_words, 1:length(vocab)+1, 'Normalization', 'probability');
         % Use `hist_words` as representation for our image
         encodings(i, :) = hist_words;
     end

@@ -3,18 +3,33 @@ function [train_X, train_y, test_X, test_y] = read_input(path_to_train, path_to_
     path_to_test = 'data/test.mat';
 
     train_full = load(path_to_train);
-    test_full = load(path_to_train);
+    test_full = load(path_to_test);
 
-    label_idxs = [1,2,3,7,9];
+    selected_label_idxs = [1,2,3,7,9];
     train_X = train_full.X;
     train_y = train_full.y;
-    labels = train_full.class_names(label_idxs);
+    labels = train_full.class_names(selected_label_idxs);
 
     test_X = test_full.X;
     test_y = test_full.y;
 
     % TODO:  Last step - Filter only on the 5 labels
+    train_class_idxs = ismember(train_y, selected_label_idxs);
+    test_class_idxs = ismember(test_y, selected_label_idxs);
+    
+    train_X = train_X(train_class_idxs, :);
+    train_y = train_y(train_class_idxs);
 
+    test_X = test_X(test_class_idxs, :);
+    test_y = test_y(test_class_idxs);
+    
+    % Convert test_y and test_x to their indices
+    test_y(test_y == 7) = 4;
+    train_y(train_y == 7) = 4;
+    test_y(test_y == 7) = 4;
+    test_y(test_y == 9) = 5;
+    train_y(train_y == 9) = 5;
+    
     if DEBUG_MODE == true
     % Debug-mode: sample number of points per class
         [sampled_train_X, sampled_train_y] = sample_points_per_class(train_X, train_y, SAMPLE_SIZE_TRAIN);
