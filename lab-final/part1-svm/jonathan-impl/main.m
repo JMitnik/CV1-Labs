@@ -15,7 +15,9 @@ DENSE_SIFT_STEP_SIZE = 5;
 
 % Color spaces: 'greyscale_SIFT', 'color_SIFT', 'opponent_SIFT'
 COLOR_SPACE = 'greyscale_SIFT';
-SAMPLING_MODE = 'dense_SIFT';
+
+% Sampling modes: 'dense_SIFT', 'keypoints_SIFT'
+SAMPLING_MODE = 'keypoints_SIFT';
 
 LABEL_IDXS = [1,2,3,4,5];
 %%%
@@ -24,7 +26,6 @@ LABEL_IDXS = [1,2,3,4,5];
 path_to_train = 'data/train.mat';
 path_to_test = 'data/test.mat';
 [train_X, train_y, test_X, test_y] = read_input(path_to_train, path_to_test, true, SAMPLE_SIZE_TRAIN, SAMPLE_SIZE_TEST);
-
 %%%
 % 1. Feature extraction
 %%%
@@ -36,17 +37,23 @@ feature_descriptors = extract_features(vocab_X, COLOR_SPACE, SAMPLING_MODE, DENS
 %%%
 % 2. Building a vocabulary
 %%%
+tic
 disp('Going to create the vocabulary now');
 vocab = create_vocab(feature_descriptors, VOCAB_SIZE);
+time_to_vocab = toc;
 
+fprintf('Seconds to create vocab: %0.2f \n', time_to_vocab);
 %%%
 % 3. Quantize features using a visual vocabulary
 % 4. Represent features by frequencies
 %%%
+tic
 disp('Going to encode the training and test data now');
 train_encodings = encode_images(train_X, vocab, COLOR_SPACE, SAMPLING_MODE, DENSE_SIFT_STEP_SIZE);
 test_encodings = encode_images(test_X, vocab, COLOR_SPACE, SAMPLING_MODE, DENSE_SIFT_STEP_SIZE);
+time_to_encodings = toc;
 
+fprintf('Seconds to create train and test encodings: %0.2f \n', time_to_encodings);
 %%%
 % 5. Classification
 %%%
@@ -66,7 +73,7 @@ end
 try
     model_libsvm = train_libsvm(train_encodings, train_y);
     disp('Trained libsvm model!');
-    [pred_libsvm, probs_libsvm] = predict_libsvm(model_libsvm, test_encodings, label_idxs);
+    [pred_libsvm, probs_libsvm] = predict_libsvm(model_libsvm, test_encodings, test_y);
     disp('Did prediction with libsvm model');
 catch
     disp('Cant run libsvm, you will have to rely on fitcecoc!');

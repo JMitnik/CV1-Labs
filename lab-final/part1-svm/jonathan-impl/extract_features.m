@@ -41,7 +41,7 @@ function features = extract_features(X, color_space, sampling_mode, DENSE_SIFT_S
         % Use SIFT on the images
         img_features = zeros('like', img);
 
-        for channel = 1:size(img_features,2)
+        for channel = 1:size(img,3)
             if strcmp(sampling_mode, 'keypoints_SIFT')
                 [~, descriptors] = vl_sift(img(:, :, channel));
             end

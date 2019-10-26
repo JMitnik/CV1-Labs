@@ -5,6 +5,6 @@ function [model] = train_libsvm(X, y)
     for i=1:length(label_idxs)
         class_label = label_idxs(i);
         binary_classes = y == class_label;
-        model{i} = svmtrain(double(binary_classes), train_encodings, '-c 1 -g 0.2 -b 1');
+        model{i} = svmtrain(double(binary_classes), X, '-c 1 -g 0.2 -b 1');
     end
 end
