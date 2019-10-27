@@ -8,8 +8,8 @@ addpath('matconvnet-1.0-beta23/matlab/');
 addpath('tSNE_matlab');
 
 BATCH_SIZE = [50,100];
-NUM_EPOCHS = [2,3,4];
-LR = 0.05;
+NUM_EPOCHS = [40,80,120];
+LR = 0.1;
 
 num_results = length(BATCH_SIZE)*length(NUM_EPOCHS);
 cnn_accs = zeros(num_results,1);
@@ -41,34 +41,49 @@ for i=1:length(BATCH_SIZE);
         idx = idx+1;
 
         clear net info data nets
-
-        fileID = fopen(fullfile(expdir, 'accuracies.txt'), 'w');
-            fprintf(fileID, 'CNN: fine_tuned_accuracy: %0.3f\n', cnn_acc);
-            fprintf(fileID, 'SVM: pre_trained_accuracy: %0.3f\n', svm_acc);
-            fprintf(fileID, 'SVM: fine_tuned_accuracy: %0.3f\n', svm_cnn_acc);
-            fclose(fileID);
     end
 end
+
+save("cnn_accs.mat", 'cnn_accs');
+save("svm.mat", 'svm_accs');
+save("svm_cnn.mat", 'svm_cnn_accs');
 
 %% Plot results
-plot(cnn_acc, "Finetuned CNN");
-plot(svm_acc, "SVM with Pre-trained CNN Features");
-plot(svm_cnn_acc, "SVM with Fine-tuned CNN Features");
+fig = figure;
+hold on
+plot(NUM_EPOCHS(1:3), cnn_accs(1:3));
+labels(1) = strcat("Batch Size: " ,string(BATCH_SIZE(1)));
+plot(NUM_EPOCHS(1:3), cnn_accs(4:6));
+labels(2) = strcat("Batch Size: " ,string(BATCH_SIZE(2)));
+lgd = legend(labels);
+lgd.Location = 'bestoutside';    
+xlabel('Epochs');
+ylabel('Accuracy');
+title(sprintf("Finetuned CNN: Epochs vs Accuracy at different batch sizes", text));
+hold off
 
-function plot(acc, title)
-    fig = figure;
-    hold on
-    for j=1:length(BATCH_SIZE)
-        for i=1:length(NUM_EPOCHS)
-            plot(NUM_EPOCHS(i), acc(i));
-            labels(j) = string(BATCH_SIZE(j))
-        end
-    end
+fig = figure;
+hold on
+plot(NUM_EPOCHS(1:3), svm_accs(1:3));
+labels(1) = strcat("Batch Size: " ,string(BATCH_SIZE(1)));
+plot(NUM_EPOCHS(1:3), svm_accs(4:6));
+labels(2) = strcat("Batch Size: " ,string(BATCH_SIZE(2)));
+lgd = legend(labels);
+lgd.Location = 'bestoutside';    
+xlabel('Epochs');
+ylabel('Accuracy');
+title(sprintf("SVM with Pre-trained CNN Features: Epochs vs Accuracy at different batch sizes", text));
+hold off
 
-    lgd = legend(labels);
-    lgd.Location = 'bestoutside';
-    xlabel('Epochs');
-    ylabel('Accuracy');
-    title(sprintf("%s : Epochs vs Accuracy at different batch sizes", title));
-    hold off
-end
+fig = figure;
+hold on
+plot(NUM_EPOCHS(1:3), svm_cnn_accs(1:3));
+labels(1) = strcat("Batch Size: " ,string(BATCH_SIZE(1)));
+plot(NUM_EPOCHS(1:3), svm_cnn_accs(4:6));
+labels(2) = strcat("Batch Size: " ,string(BATCH_SIZE(2)));
+lgd = legend(labels);
+lgd.Location = 'bestoutside';    
+xlabel('Epochs');
+ylabel('Accuracy');
+title(sprintf("SVM with Fine-tuned CNN Features: Epochs vs Accuracy at different batch sizes", text));
+hold off
