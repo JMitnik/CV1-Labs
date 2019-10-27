@@ -1,4 +1,5 @@
 % ! NOTE: Run VL_Setup.m to get started
+% ! Ensure libsvm is installed to run, so we can use trainsvm and predictsvm:
 % Default params
 
 
